@@ -1,0 +1,136 @@
+/**
+ * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
+ * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
+ * @cliArgs --device "MSPM0G350X" --package "LQFP-48(PT)" --part "Default" --product "mspm0_sdk@2.00.00.03"
+ * @versions {"tool":"1.20.0+3587"}
+ */
+
+/**
+ * Import the modules used in this configuration.
+ */
+const GPIO          = scripting.addModule("/ti/driverlib/GPIO", {}, false);
+const GPIO1         = GPIO.addInstance();
+const GPIO2         = GPIO.addInstance();
+const GPIO3         = GPIO.addInstance();
+const GPIO4         = GPIO.addInstance();
+const MCAN          = scripting.addModule("/ti/driverlib/MCAN", {}, false);
+const MCAN1         = MCAN.addInstance();
+const SYSCTL        = scripting.addModule("/ti/driverlib/SYSCTL");
+const SYSTICK       = scripting.addModule("/ti/driverlib/SYSTICK");
+const ProjectConfig = scripting.addModule("/ti/project_config/ProjectConfig");
+
+/**
+ * Write custom configuration values to the imported modules.
+ */
+const divider9       = system.clockTree["UDIV"];
+divider9.divideValue = 2;
+
+const multiplier2         = system.clockTree["PLL_QDIV"];
+multiplier2.multiplyValue = 10;
+
+const mux2       = system.clockTree["CANCLKMUX"];
+mux2.inputSelect = "CANCLKMUX_PLLCLK1_OUT";
+
+const mux4       = system.clockTree["EXHFMUX"];
+mux4.inputSelect = "EXHFMUX_XTAL";
+
+const mux8       = system.clockTree["HSCLKMUX"];
+mux8.inputSelect = "HSCLKMUX_SYSPLL2X";
+
+const mux12       = system.clockTree["SYSPLLMUX"];
+mux12.inputSelect = "zSYSPLLMUX_HFCLK";
+
+const pinFunction4                        = system.clockTree["HFXT"];
+pinFunction4.enable                       = true;
+pinFunction4.inputFreq                    = 8;
+pinFunction4.HFXTStartup                  = 255;
+pinFunction4.peripheral.$assign           = "SYSCTL";
+pinFunction4.peripheral.hfxInPin.$assign  = "PA5";
+pinFunction4.peripheral.hfxOutPin.$assign = "PA6";
+
+GPIO1.$name                         = "GPIO_LEDS";
+GPIO1.port                          = "PORTA";
+GPIO1.associatedPins.create(2);
+GPIO1.associatedPins[0].$name       = "USER_LED_1";
+GPIO1.associatedPins[0].assignedPin = "3";
+GPIO1.associatedPins[0].pin.$assign = "PA3";
+GPIO1.associatedPins[1].$name       = "USER_LED_2";
+GPIO1.associatedPins[1].assignedPin = "4";
+GPIO1.associatedPins[1].pin.$assign = "PA4";
+
+const Board                       = scripting.addModule("/ti/driverlib/Board", {}, false);
+Board.peripheral.$assign          = "DEBUGSS";
+Board.peripheral.swclkPin.$assign = "PA20";
+Board.peripheral.swdioPin.$assign = "PA19";
+
+GPIO2.$name                         = "GPIO_LCD";
+GPIO2.port                          = "PORTB";
+GPIO2.associatedPins.create(2);
+GPIO2.associatedPins[0].$name       = "LCD_DC";
+GPIO2.associatedPins[0].assignedPin = "20";
+GPIO2.associatedPins[0].ioStructure = "SD";
+GPIO2.associatedPins[0].pin.$assign = "PB20";
+GPIO2.associatedPins[1].$name       = "LCD_RES";
+GPIO2.associatedPins[1].assignedPin = "24";
+
+GPIO3.port                           = "PORTA";
+GPIO3.$name                          = "GPIO_SPI_";
+GPIO3.associatedPins.create(2);
+GPIO3.associatedPins[0].$name        = "PIN_0";
+GPIO3.associatedPins[0].assignedPin  = "17";
+GPIO3.associatedPins[0].initialValue = "SET";
+GPIO3.associatedPins[1].$name        = "CS";
+GPIO3.associatedPins[1].assignedPin  = "8";
+
+GPIO4.$name                              = "GPIO_SPI";
+GPIO4.port                               = "PORTB";
+GPIO4.associatedPins.create(2);
+GPIO4.associatedPins[0].$name            = "SCK";
+GPIO4.associatedPins[0].assignedPin      = "18";
+GPIO4.associatedPins[0].ioStructure      = "SD";
+GPIO4.associatedPins[0].internalResistor = "PULL_UP";
+GPIO4.associatedPins[1].$name            = "PICO";
+GPIO4.associatedPins[1].assignedPin      = "17";
+
+MCAN1.$name                = "MCAN0";
+MCAN1.emulationEnable      = true;
+MCAN1.desiredNomRate       = 1000;
+MCAN1.brsEnable            = true;
+MCAN1.autoWkupEnable       = true;
+MCAN1.wkupReqEnable        = true;
+MCAN1.tdcEnable            = true;
+MCAN1.useCalcDataVal       = true;
+MCAN1.additionalCoreConfig = true;
+MCAN1.rrfs                 = true;
+MCAN1.rrfe                 = true;
+MCAN1.anfe                 = "1";
+MCAN1.anfs                 = "1";
+MCAN1.overrideRetention    = true;
+MCAN1.txPinConfig.$name    = "ti_driverlib_gpio_GPIOPinGeneric0";
+MCAN1.rxPinConfig.$name    = "ti_driverlib_gpio_GPIOPinGeneric1";
+
+SYSCTL.forceDefaultClkConfig = true;
+SYSCTL.clockTreeEn           = true;
+
+SYSTICK.periodEnable      = true;
+SYSTICK.interruptEnable   = true;
+SYSTICK.systickEnable     = true;
+SYSTICK.interruptPriority = "3";
+SYSTICK.period            = 80000;
+
+ProjectConfig.deviceSpin = "MSPM0G3507";
+scripting.suppress("Migrating requires going through the Switch Board or Device menu in the Device View section\\.", ProjectConfig, "deviceSpin");
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+GPIO2.associatedPins[1].pin.$suggestSolution = "PB24";
+GPIO3.associatedPins[0].pin.$suggestSolution = "PA17";
+GPIO3.associatedPins[1].pin.$suggestSolution = "PA8";
+GPIO4.associatedPins[0].pin.$suggestSolution = "PB18";
+GPIO4.associatedPins[1].pin.$suggestSolution = "PB17";
+MCAN1.peripheral.$suggestSolution            = "CANFD0";
+MCAN1.peripheral.rxPin.$suggestSolution      = "PA13";
+MCAN1.peripheral.txPin.$suggestSolution      = "PA12";
